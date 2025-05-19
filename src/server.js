@@ -93,6 +93,61 @@ app.post("/api/upload", upload.single("profilePicture"), (req, res) => {
   }
 });
 
+// API endpoint for deleting profile pictures
+app.delete("/api/upload/:filename", (req, res) => {
+  try {
+    const { filename } = req.params;
+
+    // Prevent directory traversal
+    if (
+      filename.includes("..") ||
+      filename.includes("/") ||
+      filename.includes("\\")
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid filename format",
+      });
+    }
+
+    // Ensure the filename starts with 'profile-' to prevent deleting other files
+    if (!filename.startsWith("profile-")) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid filename format",
+      });
+    }
+
+    const filePath = path.join(uploadDir, filename);
+
+    // Check if file exists
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({
+        success: false,
+        message: "File not found",
+      });
+    }
+
+    // Delete the file
+    fs.unlinkSync(filePath);
+
+    return res.status(200).json({
+      success: true,
+      message: "File deleted successfully",
+      data: {
+        filename: filename,
+      },
+    });
+  } catch (error) {
+    console.error("Error deleting file:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error deleting file",
+      error: error.message,
+    });
+  }
+});
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);

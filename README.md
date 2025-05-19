@@ -85,6 +85,47 @@ Uploads a profile picture.
 }
 ```
 
+### `DELETE /api/upload/:filename`
+
+Deletes a profile picture by filename.
+
+**Request:**
+
+- Method: DELETE
+- URL Parameter: `filename` - The name of the file to delete (must start with "profile-")
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "message": "File deleted successfully",
+  "data": {
+    "filename": "profile-1621234567890-123456789.jpg"
+  }
+}
+```
+
+### Error Responses for Delete
+
+**File not found:**
+
+```json
+{
+  "success": false,
+  "message": "File not found"
+}
+```
+
+**Invalid filename format:**
+
+```json
+{
+  "success": false,
+  "message": "Invalid filename format"
+}
+```
+
 ## Testing
 
 You can test the API using tools like cURL, Postman, or any API testing tool.
@@ -103,6 +144,18 @@ curl -X POST -F "profilePicture=@/path/to/your/image.jpg" http://localhost:3000/
 4. Add a key "profilePicture" and select "File" as the type
 5. Upload your image file
 6. Send the request
+
+### Example using cURL to delete a file:
+
+```bash
+curl -X DELETE http://localhost:3000/api/upload/profile-1621234567890-123456789.jpg
+```
+
+### Example using Postman to delete a file:
+
+1. Set request type to DELETE
+2. URL: http://localhost:3000/api/upload/profile-1621234567890-123456789.jpg
+3. Send the request
 
 ## Technologies Used
 
