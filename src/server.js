@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const multer = require("multer");
 const path = require("path");
@@ -8,6 +9,7 @@ const morgan = require("morgan");
 // Initialize app
 const app = express();
 const PORT = process.env.PORT || 3000;
+const PASSWORD = process.env.PASSWORD || null;
 
 // Middleware
 app.use(cors());
@@ -61,6 +63,13 @@ const upload = multer({
 // API endpoint for uploading profile pictures
 app.post("/api/upload", upload.single("profilePicture"), (req, res) => {
   try {
+    if (PASSWORD && req.headers.authorization !== PASSWORD) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized",
+      });
+    }
+    
     if (!req.file) {
       return res.status(400).json({
         success: false,
@@ -95,6 +104,12 @@ app.post("/api/upload", upload.single("profilePicture"), (req, res) => {
 // API endpoint for deleting profile pictures
 app.delete("/api/upload/:filename", (req, res) => {
   try {
+    if (PASSWORD && req.headers.authorization !== PASSWORD) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized",
+      });
+    }
     const { filename } = req.params;
 
     // Prevent directory traversal
