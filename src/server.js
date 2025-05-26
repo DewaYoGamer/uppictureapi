@@ -5,10 +5,12 @@ const path = require('path');
 const drive = require('./gdrive');
 require('dotenv').config();
 
+const PORT = process.env.PORT || 3000;
+const PASSWORD = process.env.PASSWORD || null;
 const app = express();
 const upload = multer({
   dest: 'uploads/',
-  fileFilter: (req, file, cb) => {
+  fileFilter: (_req, file, cb) => {
     const allowed = /jpeg|jpg|png|gif|webp|octet-stream/;
     const isValid = allowed.test(file.mimetype);
 
@@ -35,6 +37,16 @@ function saveFileMap(data) {
 
 // === Upload File ===
 app.post('/api/upload', upload.single('profilePicture'), async (req, res) => {
+  if (PASSWORD && req.headers.authorization !== PASSWORD) {
+    return res.status(401).json({
+      success: false,
+      message: "Unauthorized",
+    });
+  }
+  if (!req.file) {
+    return res.status(400).json({ success: false, message: 'No file uploaded' });
+  }
+  
   const filePath = req.file.path;
   const customName = `file_${Date.now()}`;
 
@@ -78,6 +90,10 @@ app.post('/api/upload', upload.single('profilePicture'), async (req, res) => {
 
 // === Tampilkan Gambar ===
 app.get('/uploads/:name', async (req, res) => {
+  if (!req.params.name) {
+    return res.status(400).send('File name is required');
+  }
+
   const name = req.params.name;
   const fileMap = loadFileMap();
   const fileId = fileMap[name];
@@ -100,6 +116,16 @@ app.get('/uploads/:name', async (req, res) => {
 
 // === Hapus File ===
 app.delete('/api/upload/:name', async (req, res) => {
+  if (PASSWORD && req.headers.authorization !== PASSWORD) {
+    return res.status(401).json({
+      success: false,
+      message: "Unauthorized",
+    });
+  }
+  if (!req.params.name) {
+    return res.status(400).json({ success: false, message: 'File name is required' });
+  }
+  
   const name = req.params.name;
   const fileMap = loadFileMap();
   const fileId = fileMap[name];
@@ -122,4 +148,4 @@ app.delete('/api/upload/:name', async (req, res) => {
 });
 
 // === Start Server ===
-app.listen(3000, () => console.log('Server running on http://localhost:3000'));
+app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));

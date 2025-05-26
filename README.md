@@ -30,18 +30,29 @@ A simple Node.js Express API for uploading, serving, and deleting images using G
 4. **Environment Variables:**
    Create a `.env` file in the root directory with:
    ```env
+   PORT=3000
+   PASSWORD=<YOUR PASSWORD>
    GOOGLE_DRIVE_FOLDER_ID=your_folder_id_here
    ```
+   - `PORT`: (Optional) Port for the server (default: 3000 if not set)
+   - `PASSWORD`: (Optional) Password for protected endpoints (if implemented)
+   - `GOOGLE_DRIVE_FOLDER_ID`: Your Google Drive folder ID for uploads
 
 ## Usage
 
 ### Start the server
 
 ```bash
-node src/server.js
+npm start
 ```
 
-Server runs at http://localhost:3000
+For development with auto-reload:
+
+```bash
+npm run dev
+```
+
+Server runs at `http://localhost:PORT` (default: 3000 or as set in `.env`)
 
 ### Endpoints
 
@@ -63,6 +74,7 @@ Server runs at http://localhost:3000
 - Only image files are allowed (jpeg, jpg, png, gif, webp).
 - File mappings are stored in `fileMap.json` for persistence.
 - Uploaded files are deleted from local storage after upload.
+- The server port and password can be set in `.env`.
 
 ## License
 
