@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
@@ -24,7 +25,8 @@ const upload = multer({
 
 
 const FILEMAP_PATH = path.join(__dirname, '../fileMap.json');
-
+app.use(cors());
+app.set('trust proxy', true);
 // === Helper: Baca dan Tulis fileMap.json ===
 function loadFileMap() {
   if (!fs.existsSync(FILEMAP_PATH)) return {};
