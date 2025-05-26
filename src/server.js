@@ -48,7 +48,7 @@ app.post('/api/upload', upload.single('profilePicture'), async (req, res) => {
   }
   
   const filePath = req.file.path;
-  const customName = `file_${Date.now()}`;
+  const customName = `file_${Date.now()}.${req.file.originalname.split('.').pop()}`;
 
   try {
     const response = await drive.files.create({
